@@ -1,0 +1,26 @@
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.break-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.session-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.timer-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}

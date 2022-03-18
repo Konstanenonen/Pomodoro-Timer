@@ -1,15 +1,19 @@
+/* eslint-disable max-len */
 /* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable react/jsx-one-expression-per-line */
 import React from 'react';
+import Timer from './components/Timer';
 
 function App() {
   const [timer, setTimer] = React.useState({
     break: {
+      control: 5,
       minutes: 5,
       seconds: 0,
     },
     session: {
+      control: 25,
       minutes: 25,
       seconds: 0,
     },
@@ -19,13 +23,17 @@ function App() {
   const [start, setStart] = React.useState(false);
 
   function reset() {
+    setStart(false);
+
     setTimer((prevState) => ({
       ...prevState,
       break: {
+        control: 5,
         minutes: 5,
         seconds: 0,
       },
       session: {
+        control: 25,
         minutes: 25,
         seconds: 0,
       },
@@ -34,11 +42,12 @@ function App() {
   }
 
   function decrementBreak() {
-    if (timer.break <= 0) return;
+    if (timer.break.minutes === 1) return;
 
     setTimer((prevState) => ({
       ...prevState,
       break: {
+        control: prevState.break.control - 1,
         minutes: prevState.break.minutes - 1,
         seconds: 0,
       },
@@ -46,10 +55,11 @@ function App() {
   }
 
   function incrementBreak() {
-    if (timer.break >= 60) return;
+    if (timer.break.minutes >= 60) return;
     setTimer((prevState) => ({
       ...prevState,
       break: {
+        control: prevState.break.control + 1,
         minutes: prevState.break.minutes + 1,
         seconds: 0,
       },
@@ -57,11 +67,12 @@ function App() {
   }
 
   function decrementSession() {
-    if (timer.session <= 0) return;
+    if (timer.session.minutes === 1) return;
 
     setTimer((prevState) => ({
       ...prevState,
       session: {
+        control: prevState.session.control - 1,
         minutes: prevState.session.minutes - 1,
         seconds: 0,
       },
@@ -69,10 +80,11 @@ function App() {
   }
 
   function incrementSession() {
-    if (timer.session >= 60) return;
+    if (timer.session.minutes >= 60) return;
     setTimer((prevState) => ({
       ...prevState,
       session: {
+        control: prevState.session.control + 1,
         minutes: prevState.session.minutes + 1,
         seconds: 0,
       },
@@ -81,10 +93,53 @@ function App() {
 
   function tickForward() {
     setTimer((prevState) => {
+      if (prevState.session.minutes === 0
+         && prevState.session.seconds === 0
+         && prevState.break.minutes === 0
+         && prevState.break.seconds === 0) {
+        return ({
+          ...prevState,
+          break: {
+            control: prevState.break.control,
+            minutes: prevState.break.control,
+            seconds: 0,
+          },
+          session: {
+            control: prevState.session.control,
+            minutes: prevState.session.control,
+            seconds: 0,
+          },
+          current: 'Session',
+        });
+      }
+
+      if (prevState.session.minutes === 0 && prevState.session.seconds === 0) {
+        if (prevState.break.seconds === 0) {
+          return ({
+            ...prevState,
+            current: 'Break',
+            break: {
+              control: prevState.break.control,
+              minutes: prevState.break.minutes - 1,
+              seconds: 59,
+            },
+          });
+        }
+        return ({
+          ...prevState,
+          break: {
+            control: prevState.break.control,
+            minutes: prevState.break.minutes,
+            seconds: prevState.break.seconds - 1,
+          },
+        });
+      }
+
       if (prevState.session.seconds === 0) {
         return ({
           ...prevState,
           session: {
+            control: prevState.session.control,
             minutes: prevState.session.minutes - 1,
             seconds: 59,
           },
@@ -93,6 +148,7 @@ function App() {
       return ({
         ...prevState,
         session: {
+          control: prevState.session.control,
           minutes: prevState.session.minutes,
           seconds: prevState.session.seconds - 1,
         },
@@ -116,13 +172,13 @@ function App() {
 
   return (
     <div className="App">
-      <h1>This is App</h1>
+      <h1>Pomodoro Timer</h1>
       <div className="pomodoro-wrapper">
         <div className="break-wrapper">
           <h2 id="break-label">Break Length</h2>
           <div className="controls-wrappers">
             <button id="break-increment" type="button" onClick={incrementBreak}>+1</button>
-            <div id="break-length">{timer.break.minutes}</div>
+            <div id="break-length">{timer.break.control}</div>
             <button id="break-decrement" type="button" onClick={decrementBreak}>-1</button>
           </div>
         </div>
@@ -130,16 +186,15 @@ function App() {
           <h2 id="session-label">Session Length</h2>
           <div className="controls-wrappers">
             <button id="session-increment" type="button" onClick={incrementSession}>+1</button>
-            <div id="session-length">{timer.session.minutes}</div>
+            <div id="session-length">{timer.session.control}</div>
             <button id="session-decrement" type="button" onClick={decrementSession}>-1</button>
           </div>
         </div>
-        <div className="timer-wrapper">
-          <h2 id="timer-label">{timer.current}</h2>
-          <h2 id="time-left">{timer.session.minutes}:{timer.session.seconds + (timer.session.seconds === 0 && '0')}</h2>
-          <button id="start_stop" type="button" onClick={() => setStart((prevState) => !prevState)}>Start/Stop</button>
-          <button id="reset" type="button" onClick={reset}>Reset</button>
-        </div>
+        <Timer
+          reset={() => reset()}
+          timer={timer}
+          toggleStart={() => setStart((prevState) => !prevState)}
+        />
       </div>
     </div>
   );

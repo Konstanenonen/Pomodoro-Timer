@@ -16,9 +16,11 @@ function App() {
     current: 'Session',
     timerID: 0,
   });
+  const [start, setStart] = React.useState(false);
 
   function reset() {
-    setTimer({
+    setTimer((prevState) => ({
+      ...prevState,
       break: {
         minutes: 5,
         seconds: 0,
@@ -28,8 +30,7 @@ function App() {
         seconds: 0,
       },
       current: 'Session',
-      timerID: 0,
-    });
+    }));
   }
 
   function decrementBreak() {
@@ -99,12 +100,19 @@ function App() {
     });
   }
 
-  function startTimer() {
+  React.useEffect(() => {
+    if (!start) {
+      clearInterval(timer.timerID);
+      return;
+    }
+
+    const id = setInterval(tickForward, 1000);
+
     setTimer((prevState) => ({
       ...prevState,
-      timerID: setInterval(tickForward, 1000),
+      timerID: id,
     }));
-  }
+  }, [start]);
 
   return (
     <div className="App">
@@ -129,7 +137,7 @@ function App() {
         <div className="timer-wrapper">
           <h2 id="timer-label">{timer.current}</h2>
           <h2 id="time-left">{timer.session.minutes}:{timer.session.seconds + (timer.session.seconds === 0 && '0')}</h2>
-          <button id="start_stop" type="button" onClick={startTimer}>Start/Stop</button>
+          <button id="start_stop" type="button" onClick={() => setStart((prevState) => !prevState)}>Start/Stop</button>
           <button id="reset" type="button" onClick={reset}>Reset</button>
         </div>
       </div>

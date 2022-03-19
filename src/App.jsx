@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/media-has-caption */
+/* eslint-disable react/self-closing-comp */
 /* eslint-disable max-len */
 /* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
@@ -23,6 +25,10 @@ function App() {
   const [start, setStart] = React.useState(false);
 
   function reset() {
+    const audio = document.getElementById('beep');
+    audio.pause();
+    audio.currentTime = 0;
+
     setStart(false);
 
     setTimer((prevState) => ({
@@ -181,6 +187,13 @@ function App() {
     }));
   }, [start]);
 
+  React.useEffect(() => {
+    const audio = document.getElementById('beep');
+    if (start) {
+      audio.play();
+    }
+  }, [timer.current]);
+
   return (
     <div className="App">
       <h1>Pomodoro Timer</h1>
@@ -207,6 +220,7 @@ function App() {
           toggleStart={() => setStart((prevState) => !prevState)}
         />
       </div>
+      <audio id="beep" src="https://raw.githubusercontent.com/freeCodeCamp/cdn/master/build/testable-projects-fcc/audio/BeepSound.wav"></audio>
     </div>
   );
 }

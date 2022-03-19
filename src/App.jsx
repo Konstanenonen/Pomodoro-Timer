@@ -198,27 +198,29 @@ function App() {
     <div className="App">
       <h1>Pomodoro Timer</h1>
       <div className="pomodoro-wrapper">
-        <div className="break-wrapper">
-          <h2 id="break-label">Break Length</h2>
-          <div className="controls-wrappers">
-            <button id="break-increment" type="button" onClick={incrementBreak}>+1</button>
-            <div id="break-length">{timer.break.control}</div>
-            <button id="break-decrement" type="button" onClick={decrementBreak}>-1</button>
-          </div>
-        </div>
-        <div className="session-wrapper">
-          <h2 id="session-label">Session Length</h2>
-          <div className="controls-wrappers">
-            <button id="session-increment" type="button" onClick={incrementSession}>+1</button>
-            <div id="session-length">{timer.session.control}</div>
-            <button id="session-decrement" type="button" onClick={decrementSession}>-1</button>
-          </div>
-        </div>
         <Timer
           reset={() => reset()}
           timer={timer}
           toggleStart={() => setStart((prevState) => !prevState)}
         />
+        <div className="controls-wrapper">
+          <div className="break-wrapper">
+            <h2 id="break-label">Break Length</h2>
+            <div className="controls-wrappers">
+              <button id="break-increment" type="button" onClick={incrementBreak}>+</button>
+              <div id="break-length">{timer.break.control}</div>
+              <button id="break-decrement" type="button" onClick={decrementBreak}>-</button>
+            </div>
+          </div>
+          <div className="session-wrapper">
+            <h2 id="session-label">Session Length</h2>
+            <div className="controls-wrappers">
+              <button id="session-increment" type="button" onClick={incrementSession}>+</button>
+              <div id="session-length">{timer.session.control}</div>
+              <button id="session-decrement" type="button" onClick={decrementSession}>-</button>
+            </div>
+          </div>
+        </div>
       </div>
       <audio id="beep" src="https://raw.githubusercontent.com/freeCodeCamp/cdn/master/build/testable-projects-fcc/audio/BeepSound.wav"></audio>
     </div>

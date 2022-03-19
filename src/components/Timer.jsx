@@ -25,7 +25,7 @@ export default function Timer(props) {
     <div className="timer-wrapper">
       <h2 id="timer-label">{props.timer.current}</h2>
       {showActive()}
-      <button id="start_stop" type="button" onClick={props.toggleStart}>Start/Stop</button>
+      <button id="start_stop" type="button" onClick={props.toggleStart}>Start / Stop</button>
       <button id="reset" type="button" onClick={props.reset}>Reset</button>
     </div>
   );

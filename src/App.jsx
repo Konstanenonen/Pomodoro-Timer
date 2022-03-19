@@ -113,15 +113,26 @@ function App() {
         });
       }
 
-      if (prevState.session.minutes === 0 && prevState.session.seconds === 0) {
-        if (prevState.break.seconds === 0) {
+      if (prevState.session.minutes === 0 && (prevState.session.seconds === 0)) {
+        if (prevState.current === 'Session') {
           return ({
             ...prevState,
             current: 'Break',
+          });
+        }
+
+        if (prevState.break.seconds === 0) {
+          return ({
+            ...prevState,
             break: {
               control: prevState.break.control,
               minutes: prevState.break.minutes - 1,
               seconds: 59,
+            },
+            session: {
+              control: prevState.session.control,
+              minutes: 0,
+              seconds: 0,
             },
           });
         }

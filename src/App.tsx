@@ -1,14 +1,10 @@
-/* eslint-disable jsx-a11y/media-has-caption */
-/* eslint-disable react/self-closing-comp */
-/* eslint-disable max-len */
-/* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
-/* eslint-disable jsx-a11y/click-events-have-key-events */
-/* eslint-disable react/jsx-one-expression-per-line */
-import React from 'react';
+import React, { useState } from 'react';
+import { useRef } from 'react';
 import Timer from './components/Timer';
+import { Pomodoro } from './models';
 
-function App() {
-  const [timer, setTimer] = React.useState({
+const App: React.FC = () => {
+  const [timer, setTimer] = useState<Pomodoro>({
     break: {
       control: 5,
       minutes: 5,
@@ -22,11 +18,14 @@ function App() {
     current: 'Session',
     timerID: 0,
   });
-  const [start, setStart] = React.useState(false);
+  const [start, setStart] = React.useState<boolean>(false);
+  const audioRef = useRef<HTMLAudioElement>(null);
 
-  function reset() {
-    const audio = document.getElementById('beep');
-    audio.pause();
+  const reset = () => {
+    audioRef.current?.pause();
+    //Had to use the document object, beacause typescript didn't want to play nice
+    // with .currentTime
+    const audio = document.getElementById("beep") as HTMLAudioElement;
     audio.currentTime = 0;
 
     setStart(false);
@@ -179,18 +178,23 @@ function App() {
       return;
     }
 
-    const id = setInterval(tickForward, 1000);
+    const id = (setInterval(tickForward, 1000) as unknown) as number;
 
     setTimer((prevState) => ({
-      ...prevState,
+      break: {
+        ...prevState.break,
+      },
+      session: {
+        ...prevState.session,
+      },
+      current: prevState.current,
       timerID: id,
     }));
   }, [start]);
 
   React.useEffect(() => {
-    const audio = document.getElementById('beep');
     if (start) {
-      audio.play();
+      audioRef.current?.play();
     }
   }, [timer.current]);
 
@@ -199,9 +203,9 @@ function App() {
       <h1>Pomodoro Timer</h1>
       <div className="pomodoro-wrapper">
         <Timer
-          reset={() => reset()}
+          reset={reset}
           timer={timer}
-          toggleStart={() => setStart((prevState) => !prevState)}
+          setStart={setStart}
         />
         <div className="controls-wrapper">
           <div className="break-wrapper">
@@ -222,7 +226,7 @@ function App() {
           </div>
         </div>
       </div>
-      <audio id="beep" src="https://raw.githubusercontent.com/freeCodeCamp/cdn/master/build/testable-projects-fcc/audio/BeepSound.wav"></audio>
+      <audio ref={audioRef} id="beep" src="https://raw.githubusercontent.com/freeCodeCamp/cdn/master/build/testable-projects-fcc/audio/BeepSound.wav"></audio>
     </div>
   );
 }
